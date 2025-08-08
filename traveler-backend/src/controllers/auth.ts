@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import userModel, { IUser } from "../models/users";
+import User from "../models/users";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { Document } from "mongoose";
@@ -26,11 +26,11 @@ const register = async (req: Request, res: Response) => {
 
     const image = (req as any).file ? `/public/profile-pictures/${(req as any).file.filename}` : "/public/profile-pictures/default.png";
 
-    const user = await userModel.create({
+    const user = await User.create({
       email: req.body.email,
       username: req.body.username,
       password: hashedPassword,
-      image: image,
+      profilePicture: image,
     });
     res.status(200).send(user);
   } catch (err) {
@@ -88,7 +88,7 @@ const generateToken = (userId: string): tTokens | null => {
 
 const login = async (req: Request, res: Response) => {
   try {
-    const user = await userModel.findOne({ email: req.body.email });
+    const user = await User.findOne({ where: { email: req.body.email } });
     if (!user) {
       res.status(403).send("wrong username or password");
       return;
@@ -105,7 +105,7 @@ const login = async (req: Request, res: Response) => {
       res.status(500).send("Server Error");
       return;
     }
-    const tokens = generateToken(user._id.toString());
+    const tokens = generateToken(user.id.toString());
 
     if (!tokens) {
       res.status(500).send("Server Error");
@@ -115,71 +115,58 @@ const login = async (req: Request, res: Response) => {
     if (!user.refreshToken) {
       user.refreshToken = [];
     }
-    user.refreshToken.push(tokens.refreshToken);
+    const currentTokens = user.refreshToken || [];
+    user.refreshToken = [...currentTokens, tokens.refreshToken];
+
     await user.save();
+
     res.status(200).send({
       accessToken: tokens.accessToken,
       refreshToken: tokens.refreshToken,
-      _id: user._id,
+      id: user.id,
     });
   } catch (err) {
     res.status(400).send(err);
   }
 };
 
-type tUser = Document<unknown, object, IUser> &
-  IUser &
-  Required<{
-    _id: mongoose.Types.ObjectId;
-  }> & {
-    __v: number;
-  };
-
 const verifyRefreshToken = (refreshToken: string | undefined) => {
-  return new Promise<tUser>((resolve, reject) => {
+  return new Promise<User>(async (resolve, reject) => {
     if (!refreshToken) {
       reject("fail");
       return;
     }
-    //verify token
     if (!process.env.TOKEN_SECRET) {
       reject("fail");
       return;
     }
-    jwt.verify(
-      refreshToken,
-      process.env.TOKEN_SECRET,
-      async (err: any, payload: any) => {
-        if (err) {
+    jwt.verify(refreshToken, process.env.TOKEN_SECRET, async (err, payload: any) => {
+      if (err) {
+        reject("fail");
+        return;
+      }
+      const userId = payload.id;
+      try {
+        const user = await User.findByPk(userId);
+        if (!user) {
           reject("fail");
           return;
         }
-        //get the user id fromn token
-        const userId = payload._id;
-        try {
-          const user = await userModel.findById(userId);
-          if (!user) {
-            reject("fail");
-            return;
-          }
-          if (!user.refreshToken || !user.refreshToken.includes(refreshToken)) {
-            user.refreshToken = [];
-            await user.save();
-            reject("fail");
-            return;
-          }
-          const tokens = user.refreshToken!.filter(
-            (token) => token !== refreshToken
-          );
-          user.refreshToken = tokens;
-
-          resolve(user);
-        } catch (err) {
-          reject(err);
+        const tokens = user.refreshToken || [];
+        if (!tokens.includes(refreshToken)) {
+          user.refreshToken = [];
+          await user.save();
+          reject("fail");
           return;
         }
+        // Remove used token from refreshToken list
+        user.refreshToken = tokens.filter((t: string) => t !== refreshToken);
+        await user.save();
+        resolve(user);
+      } catch (err) {
+        reject(err);
       }
-    );
+    });
   });
 };
 
@@ -200,7 +187,7 @@ const refresh = async (req: Request, res: Response) => {
       res.status(400).send("fail");
       return;
     }
-    const tokens = generateToken(user._id.toString());
+    const tokens = generateToken(user.id.toString());
 
     if (!tokens) {
       res.status(500).send("Server Error");
@@ -214,7 +201,7 @@ const refresh = async (req: Request, res: Response) => {
     res.status(200).send({
       accessToken: tokens.accessToken,
       refreshToken: tokens.refreshToken,
-      _id: user._id,
+      _id: user.id,
     });
   } catch (err) {
     res.status(400).send(err);
@@ -222,7 +209,7 @@ const refresh = async (req: Request, res: Response) => {
 };
 
 const checkUsernameInDb = async(username: string) => {
-    const user = await userModel.findOne({ username });
+    const user = await User.findOne({ where: { username } });
     return user !== null;
 }
 
@@ -254,12 +241,12 @@ const googleSignin = async (req: Request, res: Response): Promise<void> => {
         const image = payload?.picture
 
         if(email != null){
-            let user = await userModel.findOne({'email': email});
+            let user = await User.findOne({ where: { email } });
             if (user == null) {
                 let username = (payload?.given_name + "_" +  payload?.family_name).toLowerCase();
                 const uniqueUsername = await generateUsernameWithSuffix(username);
 
-                user = await userModel.create(
+                user = await User.create(
                     {
                         'email': email,
                         'profilePicture': image,
@@ -267,7 +254,7 @@ const googleSignin = async (req: Request, res: Response): Promise<void> => {
                         'password': '*'
                 });
             }
-            const tokens = generateToken(user._id.toString());
+            const tokens = generateToken(user.id.toString());
             if (!tokens) {
                 res.status(500).send('Server Error');
                 return;
@@ -281,7 +268,7 @@ const googleSignin = async (req: Request, res: Response): Promise<void> => {
                 {
                     accessToken: tokens.accessToken,
                     refreshToken: tokens.refreshToken,
-                    _id: user._id
+                    _id: user.id
                 });
         }
   } catch (err) {

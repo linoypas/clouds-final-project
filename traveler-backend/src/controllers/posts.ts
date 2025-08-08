@@ -1,4 +1,4 @@
-import postModel, { IPost } from "../models/posts";
+import Post from "../models/posts";
 import { Request, Response } from "express";
 import BaseController from "./base_controller";
 import dotenv from "dotenv";
@@ -7,33 +7,39 @@ import multer from "multer";
 
 dotenv.config();
 
-class PostsController extends BaseController<IPost> {
+class PostsController extends BaseController<Post> {
   constructor() {
-    super(postModel);
+    super(Post);
   }
 
   async create(req: Request, res: Response) {
-    const userId = req.params.userId;
-    const image = (req as any).file ? `/public/uploads/${(req as any).file.filename}` : null;
+    const userId = Number(req.params.userId); // convert to number
+    if (isNaN(userId)) {
+      res.status(400).send("Invalid user ID");
+      return;
+    }
+    
+    const image = (req as any).file ? `/public/uploads/${(req as any).file.filename}` : undefined; // undefined instead of null
     const { title, content } = req.body;
-    try{
-      const newPost = new postModel({
-        title: title,
-        content: content,
-        image: image,
-        owner: userId, 
+    
+    try {
+      const newPost = await this.model.create({
+        title,
+        content,
+        image,
+        owner: userId,  // number now
       });
-      await newPost.save();
       res.status(201).send(newPost);
     } catch (error) {
       res.status(400).send(error);
     }
   }
+  
 
   async update(req: Request, res: Response) {
     const itemId = req.params.id;
     try {
-      const item = await this.model.findById(itemId);
+      const item = await this.model.findByPk(itemId);
       if (!item) {
         res.status(404).json({ message: "User not found" });
         return;

@@ -1,48 +1,39 @@
-import mongoose from "mongoose";
+import { DataTypes, Model, Optional } from "sequelize";
+import sequelize from "../db";
 
-export interface IUser {
+interface UserAttributes {
+  id: number;
   email: string;
-  password?: string; // Make password optional for Google login
+  password?: string;
   refreshToken?: string[];
   username: string;
-  image?: string;
-  _id: mongoose.Types.ObjectId;
-  googleId?: string;  
-}
-export interface IUserModel extends IUser, Document {
-  _id: mongoose.Types.ObjectId;
+  profilePicture?: string;
+  googleId?: string;
 }
 
-const userSchema = new mongoose.Schema<IUser>({
-  email: {
-    type: String,
-    required: true,
-    unique: true,
-  },
-  password: {
-    type: String,
-    required: false, // Make password optional for Google login
-  },
-  username: {
-    type: String,
-    required: true,
-    unique: true,
-  },
-  image: { 
-    type: String, 
-    default: '/public/profile-pictures/default.png' 
-  },
-  refreshToken: {
-    type: [String],
-    default: [],
-  },
-  googleId: {  // Store Google OAuth ID in this field
-    type: String,
-    unique: true,
-  },
+interface UserCreationAttributes extends Optional<UserAttributes, "id" | "password" | "refreshToken" | "profilePicture" | "googleId"> {}
 
-});
+class User extends Model<UserAttributes, UserCreationAttributes> implements UserAttributes {
+  public id!: number;
+  public email!: string;
+  public password?: string;
+  public refreshToken?: string[];
+  public username!: string;
+  public profilePicture?: string;
+  public googleId?: string;
+}
 
-const userModel = mongoose.model<IUser>("Users", userSchema);
+User.init(
+  {
+    id: { type: DataTypes.INTEGER.UNSIGNED, autoIncrement: true, primaryKey: true },
+    email: { type: DataTypes.STRING, allowNull: false, unique: true },
+    password: { type: DataTypes.STRING, allowNull: true },
+    username: { type: DataTypes.STRING, allowNull: false, unique: true },
+    profilePicture: { type: DataTypes.STRING, defaultValue: "/public/profile-pictures/default.png" },
+    refreshToken: { type: DataTypes.JSON, allowNull: false, defaultValue: [] },
+    googleId: { type: DataTypes.STRING, allowNull: true, unique: true },
+  },
+  { sequelize, modelName: "User", tableName: "users", timestamps: false }
+);
 
-export default userModel;
+export default User;

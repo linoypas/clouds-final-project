@@ -1,4 +1,4 @@
-import userModel, { IUser } from "../models/users";
+import User from "../models/users";
 import { Request, Response } from "express";
 import BaseController from "./base_controller";
 
@@ -6,9 +6,9 @@ interface MulterRequest extends Request {
   file?: Express.Multer.File;
 }
 
-class UserController extends BaseController<IUser> {
+class UserController extends BaseController<User> {
   constructor() {
-    super(userModel);
+    super(User);
   }
   async updateItem(req: MulterRequest, res: Response): Promise<void> {
     const userId = req.params.id;
@@ -17,7 +17,7 @@ class UserController extends BaseController<IUser> {
     console.log("Uploaded file:", req.file); 
 
     try {
-        const user = await userModel.findById(userId);
+        const user = await this.model.findByPk(userId);
         if (!user) {
             res.status(404).json({ message: "User not found" });
             return;
@@ -28,7 +28,7 @@ class UserController extends BaseController<IUser> {
         }
 
         if (req.file) {
-            user.image = `/public/profile-pictures/${req.file.filename}`;
+          user.profilePicture = `/public/profile-pictures/${req.file.filename}`;
         }
 
         await user.save();
@@ -40,29 +40,32 @@ class UserController extends BaseController<IUser> {
     }
 }
 
-  async getById(req: Request, res: Response): Promise<void> {
-    const userId = req.params.id;
-
-    try {
-      const user = await this.model.findById(userId);
-
-      if (!user) {
-        res.status(404).json({ error: "User not found" });
-        return;
-      }
-      console.log("User Data:", user); 
-      res.json({
-        _id: user._id,
-        email: user.email,
-        username: user.username,
-        image: user.image ? `${user.image}` : null, 
-      });
-
-    } catch (error) {
-      console.error("Error fetching user:", error);
-      res.status(500).json({ error: "Internal server error" });
-    }
+async getById(req: Request, res: Response): Promise<void> {
+  const userId = Number(req.params.id);
+  if (isNaN(userId)) {
+    res.status(400).json({ message: "Invalid user ID" });
+    return;
   }
+
+  try {
+    const user = await this.model.findByPk(userId);
+
+    if (!user) {
+      res.status(404).json({ error: "User not found" });
+      return;
+    }
+
+    res.json({
+      id: user.id,
+      email: user.email,
+      username: user.username,
+      profilePicture: user.profilePicture || null,
+    });
+  } catch (error) {
+    console.error("Error fetching user:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+}
 }
 
 export default new UserController();
