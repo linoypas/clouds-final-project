@@ -1,8 +1,0 @@
-export CLIENT_PORT=3000
-export DB_LOCATION=final-project.cydckwm60tek.us-east-1.rds.amazonaws.com
-export DB_USER=admin
-export DB_PASS=Pasinkov1408
-export DB_NAME=traveler
-export SERVER_PORT=3010
-export SERVER_URL=
-export S3_BUCKET=traveler-s3-final-project
