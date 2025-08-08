@@ -32,7 +32,7 @@ function UserProfile() {
         formData.append("username", newUsername);
     
         try {
-            const response = await fetch(`https://localhost:443/auth/${userInfo._id}`, {
+            const response = await fetch(`${SERVER_URL}:${SERVER_PORT}/auth/${userInfo._id}`, {
                 method: "PUT",
                 body: formData,
                 headers: {
@@ -60,7 +60,7 @@ function UserProfile() {
 
         const fetchUserData = async () => {
             try {
-                const userResponse = await fetch(`https://localhost:443/auth/${userId}`, {
+                const userResponse = await fetch(`${SERVER_URL}:${SERVER_PORT}/auth/${userId}`, {
                     headers: {
                       Authorization: `Bearer ${localStorage.getItem('accessToken')}`
                     }
@@ -71,7 +71,7 @@ function UserProfile() {
                 const userData = await userResponse.json();
                 setUserInfo(userData);
 
-                const postsResponse = await fetch(`https://localhost:443/posts?owner=${userId}`);
+                const postsResponse = await fetch(`${SERVER_URL}:${SERVER_PORT}/posts?owner=${userId}`);
                 if (!postsResponse.ok) {
                     throw new Error('Failed to fetch posts');
                 }
@@ -103,7 +103,7 @@ function UserProfile() {
                 <div className="relative">
                     {userInfo.image ? (
                         <img
-                        src={userInfo.image ? `https://localhost:443${userInfo.image}` : "default-avatar.png"}
+                        src={userInfo.image ? `${SERVER_URL}:${SERVER_PORT}${userInfo.image}` : "default-avatar.png"}
                         alt="Profile"
                         className="profile-picture w-24 h-24 rounded-full object-cover border-4 border-gray-300"                    
                         />
@@ -163,7 +163,7 @@ function UserProfile() {
                         >
                             {post.image ? (
                                 <img
-                                    src={`https://localhost:443${post.image}`}
+                                    src={`${SERVER_URL}:${SERVER_PORT}${post.image}`}
                                     alt={post.title}
                                     className="post-image"
                                 />

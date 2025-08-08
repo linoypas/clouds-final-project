@@ -29,7 +29,7 @@ const Register = () => {
     }
 
     try {
-      const response = await fetch("https://localhost:443/auth/register", {
+      const response = await fetch("${SERVER_URL}:${SERVER_PORT}/auth/register", {
         method: "POST",
         body: formData, 
       });

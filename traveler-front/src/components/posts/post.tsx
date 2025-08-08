@@ -36,7 +36,7 @@ const Post = () => {
   useEffect(() => {
     const fetchPost = async () => {
       try {
-        const postReponse = await fetch(`https://localhost:443/posts/${postId}`, {
+        const postReponse = await fetch(`${SERVER_URL}:${SERVER_PORT}/posts/${postId}`, {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${accessToken}`,
@@ -55,7 +55,7 @@ const Post = () => {
         if (postData.likes.includes(userId)) {
           setIsLiked(true);
         }
-        const commentResponse = await fetch(`https://localhost:443/comments?postId=${postId}`, {
+        const commentResponse = await fetch(`${SERVER_URL}:${SERVER_PORT}/comments?postId=${postId}`, {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${accessToken}`,
@@ -87,7 +87,7 @@ const Post = () => {
       updatedLikes.push(userId);
     }
     try {
-      const response = await fetch(`https://localhost:443/posts/${postId}`, {
+      const response = await fetch(`${SERVER_URL}:${SERVER_PORT}/posts/${postId}`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${accessToken}`,
@@ -109,7 +109,7 @@ const Post = () => {
   const handleDelete = async () => {
     if (window.confirm('Are you sure you want to delete this post?')) {
       try {
-        const response = await fetch(`https://localhost:443/posts/${postId}`, {
+        const response = await fetch(`${SERVER_URL}:${SERVER_PORT}/posts/${postId}`, {
           method: 'DELETE',
           headers: {
             'Authorization': `Bearer ${accessToken}`,
@@ -154,7 +154,7 @@ const Post = () => {
       console.log('Uploading new image:', newImage.name); // Debugging: Log the image being uploaded
 
       try {
-        const uploadResponse = await fetch(`https://localhost:443/posts/${postId}`, {
+        const uploadResponse = await fetch(`${SERVER_URL}:${SERVER_PORT}/posts/${postId}`, {
           method: 'PUT',
           headers: {
             'Authorization': `Bearer ${accessToken}`,
@@ -178,7 +178,7 @@ const Post = () => {
     const updatedPost = { ...post, title, content, image: updatedImageUrl };
 
     try {
-      const response = await fetch(`https://localhost:443/posts/${postId}`, {
+      const response = await fetch(`${SERVER_URL}:${SERVER_PORT}/posts/${postId}`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${accessToken}`,
@@ -253,7 +253,7 @@ const Post = () => {
               {post.image && (
                 <div className="post-image-container">
                   <img
-                    src={`https://localhost:443${post.image}`}
+                    src={`${SERVER_URL}:${SERVER_PORT}${post.image}`}
                     alt="Post content"
                     className="w-full h-auto object-cover"
                     onError={() => console.error('Error loading image from:', post.image)} // Debugging: Log error if image fails to load

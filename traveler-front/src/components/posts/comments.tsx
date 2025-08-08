@@ -25,7 +25,7 @@ const Comments = () => {
     useEffect(() => {
         const fetchComments = async () => {
           try {
-            const commentResponse = await fetch(`https://localhost:443/comments?postId=${postId}`, {
+            const commentResponse = await fetch(`${SERVER_URL}:${SERVER_PORT}/comments?postId=${postId}`, {
                 method: "GET",
                 headers: {
                     'Authorization': `Bearer ${accessToken}`,
@@ -54,7 +54,7 @@ const Comments = () => {
             return;
         
         try {
-            const response = await fetch(`https://localhost:443/comments/`, {
+            const response = await fetch(`${SERVER_URL}:${SERVER_PORT}/comments/`, {
                 method: "POST",
                 headers: { 
                     'Authorization': `Bearer ${accessToken}`,
@@ -79,7 +79,7 @@ const Comments = () => {
             if (!userId) return;
             console.log(commentId);
             try {
-                const response = await fetch(`https://localhost:443/comments/${commentId}`, {
+                const response = await fetch(`${SERVER_URL}:${SERVER_PORT}/comments/${commentId}`, {
                     method: 'DELETE',
                     headers: {
                         'Authorization': `Bearer ${accessToken}`,
