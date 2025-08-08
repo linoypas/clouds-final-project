@@ -1,6 +1,5 @@
 import dotenv from "dotenv";
 dotenv.config();
-import mongoose from "mongoose";
 import bodyParser from "body-parser";
 import express, { Express } from "express";
 import postsRoute from "./routes/posts";
@@ -13,10 +12,32 @@ import path from "path";
 import multer from "multer";
 import passport from "passport";
 import session from "express-session";
-
-
+import mysql = require ('mysql')
 
 const app = express();
+
+var db = mysql.createConnection({
+  host: process.env.DB_LOCATION,
+  port: 3306,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASS,
+  database: process.env.DB_NAME,
+  timezone: "ist"
+});
+
+db.connect((err) => {
+  if (err) {
+    console.error("Database connection error:", err);
+    return;
+  }
+  console.log("Connected to database");
+});
+
+app.use((req, res, next) => {
+  (req as any).db = db;
+  next();
+});
+
 app.use(
   cors({
     origin: process.env.DOMAIN_BASE,
@@ -83,10 +104,6 @@ const upload = multer({ storage });
 
 app.use(upload.single("image")); 
 
-const db = mongoose.connection;
-db.on("error", (error) => console.error(error));
-db.once("open", () => console.log("Connected to database"));
-
 const options = {
   definition: {
     openapi: "3.0.0",
@@ -95,28 +112,13 @@ const options = {
       version: "1.0.0",
       description: "REST server including authentication using JWT",
     },
-    servers: [{ url: "http://localhost:" + process.env.PORT, },],
+    servers: [{ url: "http://localhost:" + process.env.CLIENT_PORT, },],
   },
   apis: ["./src/routes/*.ts"],
 };
 const specs = swaggerJsDoc(options);
 app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(specs));
 
-const initApp = () => {
-  return new Promise<Express>((resolve, reject) => {
-    if (!process.env.DB_CONNECT) {
-      reject("DB_CONNECT is not defined in .env file");
-    } else {
-      mongoose
-        .connect(process.env.DB_CONNECT)
-        .then(() => {
-          resolve(app);
-        })
-        .catch((error) => {
-          reject(error);
-        });
-    }
-  });
-};
-
-export default initApp;
+app.listen(process.env.CLIENT_PORT, () => {
+  console.log(`Server running on port ${process.env.CLIENT_PORT}`);
+});
