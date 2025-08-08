@@ -1,0 +1,86 @@
+html, body {
+  height: 100%;
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.login-container {
+  width: 100%;
+  max-width: 500px; 
+  padding: 30px;    
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;  
+  text-align: center;   
+}
+
+.logo-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 5px; 
+}
+
+.logo {
+  width: 100px;         
+  height: auto;
+}
+
+h2 {
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.input-field {
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  outline: none;
+}
+
+.input-field:focus {
+  border-color: #33aba5;
+  box-shadow: 0 0 5px rgba(51, 171, 165, 0.3);
+}
+
+.submit-button {
+  padding: 12px;
+  background-color: #33aba5;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.submit-button:hover {
+  background-color: #289e90;
+}
+
+.register-link {
+  font-size: 14px;
+}
+
+.register-button {
+  background: none;
+  border: none;
+  color: #33aba5;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.register-button:hover {
+  color: #289e90;
+}

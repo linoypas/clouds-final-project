@@ -1,0 +1,32 @@
+.post-image-container {
+  width: 100%; /* Makes it responsive */
+  max-width: 600px; /* Sets a reasonable max width */
+  height: auto;
+  max-height: 500px; /* Prevents images from getting too tall */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 20px auto;
+  overflow: hidden;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  background-color: #f3f3f3; /* Subtle background for contrast */
+}
+
+.post-image-container img {
+  width: 100%; /* Ensures the image scales properly */
+  height: auto;
+  max-height: 100%;
+  object-fit: contain; /* Prevents cropping */
+  border-radius: 12px;
+  transition: transform 0.3s ease;
+}
+
+.post-image-container:hover img {
+  transform: scale(1.05);
+}
+
+.post-image-container:hover {
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+}

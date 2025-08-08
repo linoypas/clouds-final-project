@@ -1,0 +1,119 @@
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #2e47b2;
+    color: #ECF0F1;
+    padding: 10px 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    font-family: 'Poppins', sans-serif;
+    width: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+}
+
+.left {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.left h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    letter-spacing: 1px;
+}
+
+.home-icon,
+.search-icon,
+.profile-icon,
+.plus-icon {
+    font-size: 2rem;  
+    cursor: pointer;
+    color: #ECF0F1;
+    display: inline-block;
+    margin-left: 5px; 
+    vertical-align: middle; 
+    transition: transform 0.2s ease, color 0.2s ease;
+    margin-bottom: -4px;
+}
+.home-icon:hover,
+.search-icon:hover,
+.profile-icon:hover,
+.plus-icon:hover {
+    transform: scale(1.2);
+    color: #1ABC9C;
+}
+.right {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end; 
+    min-width: 200px; 
+    padding-right: 35px; 
+}
+
+.nav-container {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;  
+    font-size: 1rem;
+    overflow: visible; 
+}
+.profile-icon {
+    color: #ECF0F1;
+}
+
+button {
+    background: #1ABC9C;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 20px;
+    color: white;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.2s ease;
+}
+
+button:hover {
+    background: #16A085;
+    transform: translateY(-2px);
+}
+
+body {
+    padding-top: 70px; 
+}
+
+@media (max-width: 768px) {
+    .header {
+        flex-direction: column;
+        text-align: center;
+        padding: 10px;
+        position: relative;
+    }
+
+    .left,
+    .right {
+        justify-content: center;
+        width: 100%;
+    }
+
+    .nav-container {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        overflow: visible; 
+    }
+
+    .user-info {
+        flex-direction: column;
+    }
+}
