@@ -1,0 +1,49 @@
+GET http://localhost:3000/posts/ 
+###
+GET http://localhost:3000/posts?owner=lina
+###
+GET http://localhost:3000/posts/67929b65e07c754b7965c9c8
+###
+GET http://localhost:3000/posts/67929b65e07c754b7965c9c8/comments/6792aaeefdce01c83651ea88
+###
+
+GET http://localhost:3000/posts/67929b65e07c754b7965c9c8/comments
+###
+POST http://localhost:3000/posts
+Content-Type: application/json
+
+{
+    "owner":"lina",
+    "title": "The best post",
+    "content": "blablabla"
+}
+###
+PUT http://localhost:3000/posts/67929b65e07c754b7965c9c8
+Content-Type: application/json
+
+{
+    "owner":"linoyosh!!!",
+    "title": "The best post",
+    "content": "blablabla"
+}
+###
+POST http://localhost:3000/posts/67929b65e07c754b7965c9c8/comments
+Content-Type: application/json
+
+{
+    "owner":"queennnnnn !!!",
+    "content": "blablabla"
+}
+###
+PUT http://localhost:3000/posts/67929b65e07c754b7965c9c8/comments/6792aaeefdce01c83651ea88
+Content-Type: application/json
+
+{
+    "owner":"linoyoshsss",
+    "content": "blablabla"
+}
+###
+DELETE http://localhost:3000/posts/67929b65e07c754b7965c9c8
+
+###
+DELETE http://localhost:3000/posts/67929b65e07c754b7965c9c8/comments/6792aaeefdce01c83651ea88
