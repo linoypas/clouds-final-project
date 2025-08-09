@@ -33,12 +33,7 @@ require("./models/users");
 require("./models/posts");
 require("./models/comments");
 const app = (0, express_1.default)();
-app.use((0, cors_1.default)({
-    origin: process.env.DOMAIN_BASE,
-    credentials: true,
-    methods: "GET,POST,PUT,DELETE",
-    allowedHeaders: "Content-Type,Authorization",
-}));
+app.use((0, cors_1.default)({ origin: true, credentials: true }));
 app.use((0, express_session_1.default)({
     secret: process.env.SESSION_SECRET,
     resave: false,

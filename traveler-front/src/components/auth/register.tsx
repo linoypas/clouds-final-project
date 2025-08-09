@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import "../../styles/Login.css";
 import logo from "../../assets/logo.png";
 
+
+
 const Register = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -10,6 +12,9 @@ const Register = () => {
   const [image, setImage] = useState<File | null>(null);
   const navigate = useNavigate();
 
+  const API_URL = `${process.env.REACT_APP_SERVER_URL}:${process.env.REACT_APP_SERVER_PORT}`;
+  console.log(`Server running on port ${process.env.REACT_APP_SERVER_PORT}`);
+  
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]; 
     if (file) {
@@ -31,7 +36,7 @@ const Register = () => {
     }
   
     try {
-      const response = await fetch("http://localhost:3000/auth/register", {
+      const response = await fetch(`${API_URL}/auth/register`, {
         method: "POST",
         body: formData,
       });
