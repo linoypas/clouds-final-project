@@ -13,34 +13,11 @@ class BaseController {
     constructor(model) {
         this.model = model;
     }
-    getAll(req_1, res_1) {
-        return __awaiter(this, arguments, void 0, function* (req, res, filterField = "owner") {
-            const rawFilter = req.query[filterField];
-            // Ensure filter is a string primitive (ignore if it's an object)
-            let filter;
-            if (typeof rawFilter === "string") {
-                filter = rawFilter;
-            }
-            else if (Array.isArray(rawFilter)) {
-                // if array, take first string element
-                filter = typeof rawFilter[0] === "string" ? rawFilter[0] : undefined;
-            }
-            else {
-                filter = undefined; // ignore ParsedQs objects or other types
-            }
+    getAll(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
             try {
                 let items;
-                if (filter) {
-                    items = yield this.model.findAll({
-                        where: { [filterField]: filter }, // cast here to bypass
-                        include: [{ association: 'ownerUser', attributes: ['username'] }],
-                    });
-                }
-                else {
-                    items = yield this.model.findAll({
-                        include: [{ association: 'ownerUser', attributes: ['username'] }],
-                    });
-                }
+                items = yield this.model.findAll();
                 res.send(items);
             }
             catch (error) {
@@ -53,9 +30,7 @@ class BaseController {
         return __awaiter(this, void 0, void 0, function* () {
             const itemId = req.params.id;
             try {
-                const item = yield this.model.findByPk(itemId, {
-                    include: [{ association: 'ownerUser', attributes: ['username'] }],
-                });
+                const item = yield this.model.findByPk(itemId);
                 if (item) {
                     res.send(item);
                 }

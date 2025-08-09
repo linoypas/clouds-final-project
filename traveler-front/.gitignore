@@ -6,7 +6,12 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
-
+traveler-front/node_modules
+traveler-front/package-lock.json
+traveler-backend/package-lock.json
+traveler-backend/.env
+traveler-front/.env
+traveler-backend/node_modules
 node_modules
 dist
 dist-ssr

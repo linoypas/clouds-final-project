@@ -7,7 +7,6 @@ const CreatePost = () => {
   const [title, setTitle] = useState('');
   const [image, setImage] = useState<File | null>(null);
   const navigate = useNavigate();
-  const accessToken = localStorage.getItem('accessToken');
   const [popupMessage, setPopupMessage] = useState<string | null>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -23,10 +22,9 @@ const CreatePost = () => {
     formData.append("content", content);
     if (image) formData.append("image", image);
     try {
-      const response = await fetch("${process.env.REACT_APP_SERVER_URL}:3000/posts",{
+      const response = await fetch("http://localhost:3000/posts",{
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${accessToken}`,
         },
         body: formData,
         });
@@ -37,7 +35,7 @@ const CreatePost = () => {
         console.log('Post data:', data);
         setPopupMessage("Post created successfully!");
         setTimeout(() => setPopupMessage(null), 3000);
-        navigate(`/posts/${data._id}`);
+        navigate(`/posts/${data.id}`);
 
       } else {
         console.log('Failed to create post');

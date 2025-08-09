@@ -1,21 +1,25 @@
-import path from "path";
-import multer, { FileFilterCallback } from "multer";
-import { Request } from "express";
+import { S3Client } from "@aws-sdk/client-s3";
+import multer from "multer";
+import multerS3 from "multer-s3";
 
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, path.resolve(__dirname, "/public/uploads"));
-   },
-  filename: function (req, file, cb) {
-    cb(null, Date.now() + path.extname(file.originalname));
-  },
-});
+const s3 = new S3Client({ region: process.env.AWS_REGION });
+
 
 
 const uploadMiddleware = multer({
-    storage: storage,
-    limits: { fileSize: 50 * 1024 * 1024 }, 
-  });
+  storage: multerS3({
+    s3,
+    bucket: process.env.S3_BUCKET,
+    acl: "public-read",
+    contentType: multerS3.AUTO_CONTENT_TYPE, // <-- This automatically sets Content-Type based on file mimetype
+    key: (req, file, cb) => {
+      const uniqueName = `${Date.now()}-${file.originalname}`;
+      cb(null, `uploads/${uniqueName}`);
+    },
+  }),
+  limits: { fileSize: 50 * 1024 * 1024 },
+});
+
 
 
 export default uploadMiddleware;

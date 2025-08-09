@@ -15,7 +15,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const posts_1 = __importDefault(require("../models/posts"));
 const base_controller_1 = __importDefault(require("./base_controller"));
 const dotenv_1 = __importDefault(require("dotenv"));
-const openai_1 = __importDefault(require("openai"));
 dotenv_1.default.config();
 class PostsController extends base_controller_1.default {
     constructor() {
@@ -23,19 +22,15 @@ class PostsController extends base_controller_1.default {
     }
     create(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            const userId = Number(req.params.userId); // convert to number
-            if (isNaN(userId)) {
-                res.status(400).send("Invalid user ID");
-                return;
-            }
-            const image = req.file ? `/public/uploads/${req.file.filename}` : undefined; // undefined instead of null
+            const image = req.file
+                ? req.file.location
+                : undefined;
             const { title, content } = req.body;
             try {
                 const newPost = yield this.model.create({
                     title,
                     content,
                     image,
-                    owner: userId, // number now
                 });
                 res.status(201).send(newPost);
             }
@@ -60,33 +55,13 @@ class PostsController extends base_controller_1.default {
                     item.content = req.body.content;
                 }
                 if (req.file) {
-                    item.image = `/uploads/${req.file.filename}`;
+                    item.image = req.file.location;
                 }
                 yield item.save();
                 res.status(200).send(item);
             }
             catch (error) {
                 console.log(error);
-                res.status(400).send(error);
-            }
-        });
-    }
-    getAi(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const prompt = req.query.prompt;
-            const openai = new openai_1.default();
-            try {
-                const response = yield openai.images.generate({
-                    prompt: `Generate a high-quality, realistic image of a famous landmark or scenic view in ${prompt}`,
-                    n: 3,
-                    size: "1024x1024",
-                });
-                const imageUrls = response.data
-                    .map((img) => img.url)
-                    .filter((url) => !!url);
-                res.status(200).json({ urls: imageUrls });
-            }
-            catch (error) {
                 res.status(400).send(error);
             }
         });

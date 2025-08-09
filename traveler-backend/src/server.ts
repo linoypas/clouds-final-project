@@ -3,23 +3,19 @@ dotenv.config();
 import bodyParser from "body-parser";
 import express from "express";
 import postsRoute from "./routes/posts";
-import commentsRoute from "./routes/comments";
-import authRoutes from "./routes/users";
-import swaggerJsDoc from "swagger-jsdoc";
-import swaggerUI from "swagger-ui-express";
 import cors from "cors";
 import path from "path";
 import multer from "multer";
 import passport from "passport";
 import session from "express-session";
+import uploadMiddleware from "./common/upload_middleware";
+
 
 // Import your Sequelize instance
 import sequelize from "./db";  // adjust path to your db.ts
 
 // Import models (to ensure they are registered)
-import "./models/users";
 import "./models/posts";
-import "./models/comments";
 
 const app = express();
 
@@ -54,43 +50,10 @@ app.get("/ui/*", (req, res) => {
 });
 
 app.use("/posts", postsRoute);
-app.use("/comments", commentsRoute);
-app.use("/auth", authRoutes);
 
-const publicDir = path.resolve(process.cwd(), "public");
-const uploadsDir = path.resolve(process.cwd(), "public/uploads");
-const profilePicturesDir = path.resolve(process.cwd(), "public/profile-pictures");
-
-app.use("/public", express.static(publicDir));
-app.use("/public/uploads", express.static(uploadsDir));
-app.use("/public/profile-pictures", express.static(profilePicturesDir));
-
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, uploadsDir);
-  },
-  filename: (req, file, cb) => {
-    cb(null, Date.now() + "-" + file.originalname);
-  },
+app.post("/upload-image", uploadMiddleware.single("image"), (req, res) => {
+  res.json({ url: (req.file as any).location });
 });
-
-const upload = multer({ storage });
-app.use(upload.single("image"));
-
-const options = {
-  definition: {
-    openapi: "3.0.0",
-    info: {
-      title: "Web Dev 2025 - D - REST API",
-      version: "1.0.0",
-      description: "REST server including authentication using JWT",
-    },
-    servers: [{ url: "http://localhost:" + process.env.CLIENT_PORT }],
-  },
-  apis: ["./src/routes/*.ts"],
-};
-const specs = swaggerJsDoc(options);
-app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(specs));
 
 // Start the server AFTER Sequelize connects and syncs
 async function startServer() {

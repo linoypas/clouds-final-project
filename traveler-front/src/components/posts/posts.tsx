@@ -2,32 +2,23 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import '../../styles/posts.css'
 
-interface IUser {
-  _id: string;
-  username: string;
-}
-
 interface IPost {
-  _id: string;
+  id: string;
   title: string;
-  owner: IUser | string;  
   content: string;
-  likes: string[];
   image?: string;
 }
 
 const Posts = () => {
   const [posts, setPosts] = useState<IPost[]>([]);
   const [loading, setLoading] = useState(true);
-  const accessToken = localStorage.getItem('accessToken');
 
   useEffect(() => {
     const fetchPost = async () => {
       try {
-        const postsReponse = await fetch(`${process.env.REACT_APP_SERVER_URL}:${process.env.REACT_APP_SERVER_PORT}/posts`, {
+        const postsReponse = await fetch(`http://localhost:3000/posts`, {
           method: 'GET',
           headers: {
-            'Authorization': `Bearer ${accessToken}`,
             'Content-Type': 'application/json',
           },
         });
@@ -58,10 +49,10 @@ const Posts = () => {
       ) : (
         <div className="grid">
           {posts.map((post) => (
-            <Link to={`/posts/${post._id}`} key={post._id} className="post-card-link">
+            <Link to={`/posts/${post.id}`} key={post.id} className="post-card-link">
               <div className="post-card">
                 {post.image ? (
-                  <img src={`${process.env.REACT_APP_SERVER_URL}:${process.env.REACT_APP_SERVER_PORT}${post.image}`} alt={post.title} className="post-image" />
+                  <img src={`${post.image}`} alt={post.title} className="post-image" />
                 ) : (
                   <p className="p-4 text-gray-700">{post.content}</p>
                 )}
@@ -69,9 +60,6 @@ const Posts = () => {
                   <h2 className="text-lg font-semibold">
                     {post.title}
                   </h2>
-                  <p className="text-sm text-gray-500">By: {typeof post.owner === 'object' && post.owner !== null
-                                ? post.owner.username
-                                : 'Unknown'}</p>
                 </div>
               </div>
             </Link>

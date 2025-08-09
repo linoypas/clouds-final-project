@@ -6,39 +6,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const router = express_1.default.Router();
 const posts_1 = __importDefault(require("../controllers/posts"));
-const auth_middleware_1 = __importDefault(require("../common/auth_middleware"));
-const multer_1 = __importDefault(require("multer"));
-const path_1 = __importDefault(require("path"));
+const upload_middleware_1 = __importDefault(require("../common/upload_middleware"));
 /**
 * @swagger
 * tags:
 *   name: Posts
 *   description: The Posts managing API
 */
-/**
- * @swagger
- * /posts/getAi:
- *   delete:
- *     summary: Generate post by OpenAi
- *     description: generats a post by OpenAi
- *     tags:
- *       - Posts
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - in: path
- *         name: prompt
- *         required: true
- *         schema:
- *           type: string
- *         description: The prompt for the post
- *     responses:
- *       '200':
- *         description: Post created successfully
- *       '500':
- *         description: Internal server error
- */
-router.get('/getAi', posts_1.default.getAi.bind(posts_1.default));
 /**
  * @swagger
  * components:
@@ -141,19 +115,8 @@ router.get("/:id", posts_1.default.getById.bind(posts_1.default));
  *       '500':
  *         description: Internal server error
  */
-const storage = multer_1.default.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, path_1.default.resolve(process.cwd(), 'public/uploads'));
-    },
-    filename: function (req, file, cb) {
-        cb(null, Date.now() + "-" + file.originalname);
-    },
-});
-const upload = (0, multer_1.default)({ storage: storage });
-router.post("/", auth_middleware_1.default, // Authorization middleware
-upload.single("image"), // Middleware to handle image file upload
-posts_1.default.create.bind(posts_1.default) // Controller to handle the creation logic
-);
+router.post("/", upload_middleware_1.default.single("image"), // multer-s3 for S3 upload
+posts_1.default.create.bind(posts_1.default));
 /**
  * @swagger
  * /posts/{id}:
@@ -181,7 +144,7 @@ posts_1.default.create.bind(posts_1.default) // Controller to handle the creatio
  *       '500':
  *         description: Internal server error
  */
-router.delete("/:id", auth_middleware_1.default, posts_1.default.deleteItem.bind(posts_1.default));
+router.delete("/:id", posts_1.default.deleteItem.bind(posts_1.default));
 /**
  * @swagger
  * /posts/{id}:
@@ -209,6 +172,7 @@ router.delete("/:id", auth_middleware_1.default, posts_1.default.deleteItem.bind
  *       '500':
  *         description: Internal server error
  */
-router.put("/:id", auth_middleware_1.default, upload.single("image"), posts_1.default.update.bind(posts_1.default));
+router.put("/:id", upload_middleware_1.default.single("image"), // multer-s3 for S3 upload
+posts_1.default.update.bind(posts_1.default));
 exports.default = router;
 //# sourceMappingURL=posts.js.map

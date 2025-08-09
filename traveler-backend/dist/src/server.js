@@ -17,21 +17,15 @@ dotenv_1.default.config();
 const body_parser_1 = __importDefault(require("body-parser"));
 const express_1 = __importDefault(require("express"));
 const posts_1 = __importDefault(require("./routes/posts"));
-const comments_1 = __importDefault(require("./routes/comments"));
-const users_1 = __importDefault(require("./routes/users"));
-const swagger_jsdoc_1 = __importDefault(require("swagger-jsdoc"));
-const swagger_ui_express_1 = __importDefault(require("swagger-ui-express"));
 const cors_1 = __importDefault(require("cors"));
 const path_1 = __importDefault(require("path"));
-const multer_1 = __importDefault(require("multer"));
 const passport_1 = __importDefault(require("passport"));
 const express_session_1 = __importDefault(require("express-session"));
+const upload_middleware_1 = __importDefault(require("./common/upload_middleware"));
 // Import your Sequelize instance
 const db_1 = __importDefault(require("./db")); // adjust path to your db.ts
 // Import models (to ensure they are registered)
-require("./models/users");
 require("./models/posts");
-require("./models/comments");
 const app = (0, express_1.default)();
 app.use((0, cors_1.default)({ origin: true, credentials: true }));
 app.use((0, express_session_1.default)({
@@ -56,38 +50,9 @@ app.get("/ui/*", (req, res) => {
     res.sendFile(path_1.default.join("front", "index.html"));
 });
 app.use("/posts", posts_1.default);
-app.use("/comments", comments_1.default);
-app.use("/auth", users_1.default);
-const publicDir = path_1.default.resolve(process.cwd(), "public");
-const uploadsDir = path_1.default.resolve(process.cwd(), "public/uploads");
-const profilePicturesDir = path_1.default.resolve(process.cwd(), "public/profile-pictures");
-app.use("/public", express_1.default.static(publicDir));
-app.use("/public/uploads", express_1.default.static(uploadsDir));
-app.use("/public/profile-pictures", express_1.default.static(profilePicturesDir));
-const storage = multer_1.default.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, uploadsDir);
-    },
-    filename: (req, file, cb) => {
-        cb(null, Date.now() + "-" + file.originalname);
-    },
+app.post("/upload-image", upload_middleware_1.default.single("image"), (req, res) => {
+    res.json({ url: req.file.location });
 });
-const upload = (0, multer_1.default)({ storage });
-app.use(upload.single("image"));
-const options = {
-    definition: {
-        openapi: "3.0.0",
-        info: {
-            title: "Web Dev 2025 - D - REST API",
-            version: "1.0.0",
-            description: "REST server including authentication using JWT",
-        },
-        servers: [{ url: "http://localhost:" + process.env.CLIENT_PORT }],
-    },
-    apis: ["./src/routes/*.ts"],
-};
-const specs = (0, swagger_jsdoc_1.default)(options);
-app.use("/api-docs", swagger_ui_express_1.default.serve, swagger_ui_express_1.default.setup(specs));
 // Start the server AFTER Sequelize connects and syncs
 function startServer() {
     return __awaiter(this, void 0, void 0, function* () {

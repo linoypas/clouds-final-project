@@ -1,72 +1,42 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { FaHeart, FaRegHeart, FaTrash, FaEdit } from 'react-icons/fa';
+import { FaTrash, FaEdit } from 'react-icons/fa';
 import '../../styles/post.css';
-
-interface IUser {
-  _id: string;
-  username: string;
-}
 
 interface IPost {
   id: string;
   title: string;
-  owner: IUser | string;
   content: string;
-  likes: string[];
   image?: string;
 }
 
 const Post = () => {
   const { postId } = useParams<{ postId: string }>();
-  const [comments, setComments] = useState<any[]>([]);
   const [post, setPost] = useState<IPost | null>(null);
   const [loading, setLoading] = useState(true);
-  const [isLiked, setIsLiked] = useState(false);
-  const [likes, setLikes] = useState(0);
-  const [isEditing, setIsEditing] = useState(false); // Track whether we are in edit mode
-  const [title, setTitle] = useState<string>(''); // Track title when in edit mode
-  const [content, setContent] = useState<string>(''); // Track content when in edit mode
+  const [isEditing, setIsEditing] = useState(false);
+  const [title, setTitle] = useState<string>('');
+  const [content, setContent] = useState<string>('');
   const [newImage, setNewImage] = useState<File | null>(null);
   const navigate = useNavigate();
-
-  const userId = localStorage.getItem('id');
-  const accessToken = localStorage.getItem('accessToken');
 
   useEffect(() => {
     const fetchPost = async () => {
       try {
-        const postReponse = await fetch(`${process.env.REACT_APP_SERVER_URL}:${process.env.REACT_APP_SERVER_PORT}/posts/${postId}`, {
+        const postResponse = await fetch(`http://localhost:3000/posts/${postId}`, {
           method: 'GET',
           headers: {
-            'Authorization': `Bearer ${accessToken}`,
             'Content-Type': 'application/json',
           },
         });
 
-        if (!postReponse.ok) {
+        if (!postResponse.ok) {
           throw new Error('Failed to fetch post');
         }
-        const postData = await postReponse.json();
+        const postData = await postResponse.json();
         setPost(postData);
-        setLikes(postData.likes.length);
-        setTitle(postData.title); // Set initial title for edit mode
-        setContent(postData.content); // Set initial content for edit mode
-        if (postData.likes.includes(userId)) {
-          setIsLiked(true);
-        }
-        const commentResponse = await fetch(`${process.env.REACT_APP_SERVER_URL}:${process.env.REACT_APP_SERVER_PORT}/comments?postId=${postId}`, {
-          method: 'GET',
-          headers: {
-            'Authorization': `Bearer ${accessToken}`,
-            'Content-Type': 'application/json',
-          },
-        });
-        if (!commentResponse.ok) {
-          throw new Error('Failed to fetch comments');
-        }
-        const commentsData = await commentResponse.json();
-        setComments(commentsData);
+        setTitle(postData.title);
+        setContent(postData.content);
       } catch (error) {
         console.error('Error fetching post ', error);
       } finally {
@@ -77,42 +47,12 @@ const Post = () => {
     fetchPost();
   }, [postId]);
 
-  const handleLike = async (e: any) => {
-    e.preventDefault();
-    if (!post || !userId) return;
-    let updatedLikes = [...post.likes];
-    if (isLiked) {
-      updatedLikes = updatedLikes.filter((id) => id !== userId);
-    } else {
-      updatedLikes.push(userId);
-    }
-    try {
-      const response = await fetch(`${process.env.REACT_APP_SERVER_URL}:${process.env.REACT_APP_SERVER_PORT}/posts/${postId}`, {
-        method: 'PUT',
-        headers: {
-          'Authorization': `Bearer ${accessToken}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ likes: updatedLikes }),
-      });
-      if (!response.ok) {
-        console.error('Failed to update likes');
-      }
-      setIsLiked(!isLiked);
-      setLikes(updatedLikes.length);
-      setPost({ ...post, likes: updatedLikes });
-    } catch (error) {
-      console.error('Error updating likes', error);
-    }
-  };
-
   const handleDelete = async () => {
     if (window.confirm('Are you sure you want to delete this post?')) {
       try {
-        const response = await fetch(`${process.env.REACT_APP_SERVER_URL}:${process.env.REACT_APP_SERVER_PORT}/posts/${postId}`, {
+        const response = await fetch(`http://localhost:3000/posts/${postId}`, {
           method: 'DELETE',
           headers: {
-            'Authorization': `Bearer ${accessToken}`,
             'Content-Type': 'application/json',
           },
         });
@@ -131,34 +71,30 @@ const Post = () => {
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      console.log('Selected file:', file); // Debugging: Log the selected file
+      console.log('Selected file:', file);
       setNewImage(file);
     } else {
-      console.log('No file selected'); // Debugging: Log if no file was selected
+      console.log('No file selected');
     }
   };
 
   const handleEdit = () => {
-    setIsEditing(true); // Enable edit mode
+    setIsEditing(true);
   };
 
   const handleSaveEdit = async () => {
-    if (!title || !content) return; // Ensure title and content are not empty
+    if (!title || !content) return;
 
     let updatedImageUrl = post?.image || '';
-    
-    // If a new image is selected, upload it
+
     if (newImage) {
       const formData = new FormData();
       formData.append('image', newImage);
-      console.log('Uploading new image:', newImage.name); // Debugging: Log the image being uploaded
+      console.log('Uploading new image:', newImage.name);
 
       try {
-        const uploadResponse = await fetch(`${process.env.REACT_APP_SERVER_URL}:${process.env.REACT_APP_SERVER_PORT}/posts/${postId}`, {
+        const uploadResponse = await fetch(`http://localhost:3000/posts/${postId}`, {
           method: 'PUT',
-          headers: {
-            'Authorization': `Bearer ${accessToken}`,
-          },
           body: formData,
         });
 
@@ -167,10 +103,10 @@ const Post = () => {
         }
 
         const uploadData = await uploadResponse.json();
-        console.log('Image uploaded successfully:', uploadData); // Debugging: Log the upload response
-        updatedImageUrl = uploadData.imageUrl; // Assuming the server returns an image URL
+        console.log('Image uploaded successfully:', uploadData);
+        updatedImageUrl = uploadData.imageUrl || uploadData.image; // support either key
       } catch (error) {
-        console.error('Error uploading image:', error); // Debugging: Log the error if image upload fails
+        console.error('Error uploading image:', error);
         return;
       }
     }
@@ -178,10 +114,9 @@ const Post = () => {
     const updatedPost = { ...post, title, content, image: updatedImageUrl };
 
     try {
-      const response = await fetch(`${process.env.REACT_APP_SERVER_URL}:${process.env.REACT_APP_SERVER_PORT}/posts/${postId}`, {
+      const response = await fetch(`http://localhost:3000/posts/${postId}`, {
         method: 'PUT',
         headers: {
-          'Authorization': `Bearer ${accessToken}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(updatedPost),
@@ -191,11 +126,22 @@ const Post = () => {
         throw new Error('Failed to save post changes');
       }
       const updatedPostData = await response.json();
-      console.log('Post updated successfully:', updatedPostData); // Debugging: Log the response after updating post
-      setPost(updatedPostData);
-      setIsEditing(false); // Exit edit mode
+      console.log('Post updated successfully:', updatedPostData);
+
+      // Add timestamp query param to force image refresh
+      const refreshedImageUrl = updatedPostData.image
+        ? `${updatedPostData.image}?t=${Date.now()}`
+        : '';
+
+      setPost({
+        ...updatedPostData,
+        image: refreshedImageUrl,
+      });
+
+      setIsEditing(false);
+      setNewImage(null); // reset selected image
     } catch (error) {
-      console.error('Error saving post edit:', error); // Debugging: Log the error if post edit fails
+      console.error('Error saving post edit:', error);
     }
   };
 
@@ -233,53 +179,30 @@ const Post = () => {
         ) : (
           <>
             <h3 className="text-3xl font-bold text-center p-4 text-gray-800">{post.title}</h3>
-            <p className="text-lg text-center text-gray-600 mb-4">
-              By: {post.owner && typeof post.owner !== 'string' ? post.owner.username : 'Unknown'}
-            </p>
-
-            {post.owner && typeof post.owner !== 'string' && post.owner._id === userId && (
-              <div className="flex justify-center space-x-6 mb-6">
-                <button onClick={handleEdit} className="text-blue-600 hover:text-blue-800">
-                  <FaEdit className="text-2xl" />
-                </button>
-                <button onClick={handleDelete} className="text-red-600 hover:text-red-800">
-                  <FaTrash className="text-2xl" />
-                </button>
-              </div>
-            )}
+            <div className="flex justify-center space-x-6 mb-6">
+              <button onClick={handleEdit} className="text-blue-600 hover:text-blue-800">
+                <FaEdit className="text-2xl" />
+              </button>
+              <button onClick={handleDelete} className="text-red-600 hover:text-red-800">
+                <FaTrash className="text-2xl" />
+              </button>
+            </div>
 
             <div>
               <p className="p-6 text-lg text-gray-700">{post.content}</p>
               {post.image && (
                 <div className="post-image-container">
                   <img
-                    src={`${process.env.REACT_APP_SERVER_URL}:${process.env.REACT_APP_SERVER_PORT}${post.image}`}
+                    src={post.image}
                     alt="Post content"
                     className="w-full h-auto object-cover"
-                    onError={() => console.error('Error loading image from:', post.image)} // Debugging: Log error if image fails to load
+                    onError={() => console.error('Error loading image from:', post.image)}
                   />
                 </div>
               )}
             </div>
           </>
         )}
-
-        <div className="p-6 flex justify-between items-center space-x-6">
-          <button
-            onClick={handleLike}
-            className="flex items-center text-red-600 hover:text-red-800"
-          >
-            {isLiked ? (
-              <FaHeart className="text-3xl" />
-            ) : (
-              <FaRegHeart className="text-3xl" />
-            )}
-            <span className="ml-3 font-semibold text-xl">{likes} Likes</span>
-          </button>
-          <a href={`/comments/${postId}`} className="text-blue-600 hover:text-blue-800 text-lg font-semibold">
-            {comments.length} Comments
-          </a>
-        </div>
       </div>
     </div>
   );
