@@ -6,6 +6,8 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
+traveler-front/dist
+traveler-backend/dist
 traveler-front/node_modules
 traveler-front/package-lock.json
 traveler-backend/package-lock.json

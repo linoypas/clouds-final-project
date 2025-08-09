@@ -1,7 +1,6 @@
 import express from "express";
 const router = express.Router();
 import postsController from "../controllers/posts";
-import authMiddleware from "../common/auth_middleware";
 import uploadMiddleware from "../common/upload_middleware";
 import multer from "multer";
 import path from "path";
@@ -14,30 +13,6 @@ import path from "path";
 *   description: The Posts managing API
 */
 
-/**
- * @swagger
- * /posts/getAi:
- *   delete:
- *     summary: Generate post by OpenAi
- *     description: generats a post by OpenAi
- *     tags:
- *       - Posts
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - in: path
- *         name: prompt
- *         required: true
- *         schema:
- *           type: string
- *         description: The prompt for the post
- *     responses:
- *       '200':
- *         description: Post created successfully
- *       '500':
- *         description: Internal server error
- */
-router.get('/getAi', postsController.getAi.bind(postsController));
 
 /**
  * @swagger
@@ -144,23 +119,12 @@ router.get("/:id" ,postsController.getById.bind(postsController));
  *       '500':
  *         description: Internal server error
  */
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-      cb(null, path.resolve(process.cwd(), 'public/uploads'));
-    },
-    filename: function (req, file, cb) {
-      cb(null, Date.now() + "-" + file.originalname);
-    },
-  });
-  
-  const upload = multer({ storage: storage });
 
-  router.post(
-    "/",
-    authMiddleware, // Authorization middleware
-    upload.single("image"), // Middleware to handle image file upload
-    postsController.create.bind(postsController) // Controller to handle the creation logic
-  );
+router.post(
+  "/",
+  uploadMiddleware.single("image"), // multer-s3 for S3 upload
+  postsController.create.bind(postsController)
+);
 
 /**
  * @swagger
@@ -189,7 +153,7 @@ const storage = multer.diskStorage({
  *       '500':
  *         description: Internal server error
  */
-router.delete("/:id", authMiddleware, postsController.deleteItem.bind(postsController));
+router.delete("/:id", postsController.deleteItem.bind(postsController));
 
 /**
  * @swagger
@@ -219,6 +183,10 @@ router.delete("/:id", authMiddleware, postsController.deleteItem.bind(postsContr
  *         description: Internal server error
  */
 
-router.put("/:id",authMiddleware,upload.single("image"), postsController.update.bind(postsController));
 
+router.put(
+  "/:id",
+  uploadMiddleware.single("image"), // multer-s3 for S3 upload
+  postsController.update.bind(postsController)
+);
 export default router;

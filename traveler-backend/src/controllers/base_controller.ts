@@ -14,34 +14,10 @@ class BaseController<T extends ModelWithId> {
     this.model = model;
   }
 
-  async getAll(req: Request, res: Response, filterField: string = "owner") {
-    const rawFilter = req.query[filterField];
-    
-    // Ensure filter is a string primitive (ignore if it's an object)
-    let filter: string | undefined;
-  
-    if (typeof rawFilter === "string") {
-      filter = rawFilter;
-    } else if (Array.isArray(rawFilter)) {
-      // if array, take first string element
-      filter = typeof rawFilter[0] === "string" ? rawFilter[0] : undefined;
-    } else {
-      filter = undefined; // ignore ParsedQs objects or other types
-    }
-  
+  async getAll(req: Request, res: Response) {    
     try {
       let items;
-      if (filter) {
-        items = await this.model.findAll({
-          where: { [filterField]: filter } as any, // cast here to bypass
-          include: [{ association: 'ownerUser', attributes: ['username'] }],
-        });
-        
-      } else {
-        items = await this.model.findAll({
-          include: [{ association: 'ownerUser', attributes: ['username'] }],
-        });
-      }
+      items = await this.model.findAll()
       res.send(items);
     } catch (error) {
       res.status(400).send(error);
@@ -52,9 +28,7 @@ class BaseController<T extends ModelWithId> {
   async getById(req: Request, res: Response) {
     const itemId = req.params.id;
     try {
-      const item = await this.model.findByPk(itemId, {
-        include: [{ association: 'ownerUser', attributes: ['username'] }],
-      });
+      const item = await this.model.findByPk(itemId)
       if (item) {
         res.send(item);
       } else {

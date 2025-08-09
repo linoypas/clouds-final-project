@@ -13,13 +13,9 @@ class PostsController extends BaseController<Post> {
   }
 
   async create(req: Request, res: Response) {
-    const userId = Number(req.params.userId); // convert to number
-    if (isNaN(userId)) {
-      res.status(400).send("Invalid user ID");
-      return;
-    }
-    
-    const image = (req as any).file ? `/public/uploads/${(req as any).file.filename}` : undefined; // undefined instead of null
+    const image = (req as any).file 
+    ? (req as any).file.location 
+    : undefined;
     const { title, content } = req.body;
     
     try {
@@ -27,7 +23,6 @@ class PostsController extends BaseController<Post> {
         title,
         content,
         image,
-        owner: userId,  // number now
       });
       res.status(201).send(newPost);
     } catch (error) {
@@ -51,30 +46,12 @@ class PostsController extends BaseController<Post> {
         item.content = req.body.content;
       }
       if (req.file) {
-        item.image = `/uploads/${req.file.filename}`;
+        item.image = (req as any).file.location;
       }
       await item.save();
       res.status(200).send(item);
     } catch (error) {
       console.log(error);
-      res.status(400).send(error);
-    }
-  }
-
-  async getAi(req: Request, res: Response) {
-    const prompt = req.query.prompt ;
-    const openai = new OpenAI();
-    try {
-      const response = await openai.images.generate({
-        prompt: `Generate a high-quality, realistic image of a famous landmark or scenic view in ${prompt}`,
-        n: 3, 
-        size: "1024x1024", 
-      });
-      const imageUrls = response.data
-      .map((img: { url?: string }) => img.url)
-      .filter((url): url is string => !!url);
-      res.status(200).json({ urls: imageUrls });
-    } catch (error) {
       res.status(400).send(error);
     }
   }
