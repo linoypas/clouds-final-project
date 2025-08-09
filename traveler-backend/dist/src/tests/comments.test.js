@@ -29,7 +29,7 @@ beforeAll(() => __awaiter(void 0, void 0, void 0, function* () {
     yield comments_1.default.deleteMany();
     const postResponse = yield (0, supertest_1.default)(app).post("/posts").send(test_post);
     expect(postResponse.statusCode).toBe(200);
-    post_id = postResponse.body._id;
+    post_id = postResponse.body.id;
 }));
 afterAll((done) => {
     mongoose_1.default.connection.close();
@@ -52,7 +52,7 @@ describe("Post tests", () => {
         expect(response.statusCode).toBe(200);
         expect(response.body.content).toBe(test_comment.content);
         expect(response.body.owner).toBe(test_comment.owner);
-        comment_id = response.body._id;
+        comment_id = response.body.id;
     }));
     test("Tests get all comments after adding one", () => __awaiter(void 0, void 0, void 0, function* () {
         const response = yield (0, supertest_1.default)(app).get("/posts/" + post_id + "/comments");
@@ -62,7 +62,7 @@ describe("Post tests", () => {
     test("Tests get all comments by id", () => __awaiter(void 0, void 0, void 0, function* () {
         const response = yield (0, supertest_1.default)(app).get("/posts/" + post_id + "/comments/" + comment_id);
         expect(response.statusCode).toBe(200);
-        expect(response.body._id).toBe(comment_id);
+        expect(response.body.id).toBe(comment_id);
     }));
     test("Test Delete Comment", () => __awaiter(void 0, void 0, void 0, function* () {
         const response = yield (0, supertest_1.default)(app).delete("/posts/" + post_id + "/comments/" + comment_id);

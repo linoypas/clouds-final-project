@@ -66,7 +66,7 @@ const generateToken = (userId: string): tTokens | null => {
   const random = Math.random().toString();
   const accessToken = jwt.sign(
     {
-      _id: userId,
+      id: userId,
       random: random,
     },
     process.env.TOKEN_SECRET,
@@ -75,7 +75,7 @@ const generateToken = (userId: string): tTokens | null => {
 
   const refreshToken = jwt.sign(
     {
-      _id: userId,
+      id: userId,
       random: random,
     },
     process.env.TOKEN_SECRET,
@@ -128,6 +128,7 @@ const login = async (req: Request, res: Response) => {
     });
   } catch (err) {
     res.status(400).send(err);
+    console.log(err)
   }
 };
 
@@ -202,7 +203,7 @@ const refresh = async (req: Request, res: Response) => {
     res.status(200).send({
       accessToken: tokens.accessToken,
       refreshToken: tokens.refreshToken,
-      _id: user.id,
+      id: user.id,
     });
   } catch (err) {
     res.status(400).send(err);
@@ -269,7 +270,7 @@ const googleSignin = async (req: Request, res: Response): Promise<void> => {
                 {
                     accessToken: tokens.accessToken,
                     refreshToken: tokens.refreshToken,
-                    _id: user.id
+                    id: user.id
                 });
         }
   } catch (err) {

@@ -63,10 +63,10 @@
 //     const refreshToken = response.body.refreshToken;
 //     expect(accessToken).toBeDefined();
 //     expect(refreshToken).toBeDefined();
-//     expect(response.body._id).toBeDefined();
+//     expect(response.body.id).toBeDefined();
 //     testUser.accessToken = accessToken;
 //     testUser.refreshToken = refreshToken;
-//     testUser._id = response.body._id;
+//     testUser.id = response.body.id;
 //   });
 //   test("Check tokens are not the same", async () => {
 //     const response = await request(app)

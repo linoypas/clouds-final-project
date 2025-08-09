@@ -34,17 +34,18 @@ class BaseController<T extends ModelWithId> {
       if (filter) {
         items = await this.model.findAll({
           where: { [filterField]: filter } as any, // cast here to bypass
-          include: [{ association: 'owner', attributes: ['username'] }],
+          include: [{ association: 'ownerUser', attributes: ['username'] }],
         });
         
       } else {
         items = await this.model.findAll({
-          include: [{ association: 'owner', attributes: ['username'] }],
+          include: [{ association: 'ownerUser', attributes: ['username'] }],
         });
       }
       res.send(items);
     } catch (error) {
       res.status(400).send(error);
+      console.log(error)
     }
   }
 
@@ -52,7 +53,7 @@ class BaseController<T extends ModelWithId> {
     const itemId = req.params.id;
     try {
       const item = await this.model.findByPk(itemId, {
-        include: [{ association: 'owner', attributes: ['username'] }],
+        include: [{ association: 'ownerUser', attributes: ['username'] }],
       });
       if (item) {
         res.send(item);
@@ -61,6 +62,7 @@ class BaseController<T extends ModelWithId> {
       }
     } catch (error) {
       res.status(400).send(error);
+      console.log(error)
     }
   }
 

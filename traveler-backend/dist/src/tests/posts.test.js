@@ -44,7 +44,7 @@ describe("Post tests", () => {
         expect(response.body.title).toBe(test_post.title);
         expect(response.body.content).toBe(test_post.content);
         expect(response.body.owner).toBe(test_post.owner);
-        post_id = response.body._id;
+        post_id = response.body.id;
     }));
     test("Tests get all posts after adding one", () => __awaiter(void 0, void 0, void 0, function* () {
         const response = yield (0, supertest_1.default)(app).get("/posts");
@@ -60,7 +60,7 @@ describe("Post tests", () => {
     test("Tests get all posts by id", () => __awaiter(void 0, void 0, void 0, function* () {
         const response = yield (0, supertest_1.default)(app).get("/posts/" + post_id);
         expect(response.statusCode).toBe(200);
-        expect(response.body._id).toBe(post_id);
+        expect(response.body.id).toBe(post_id);
     }));
     test("Test Delete Post", () => __awaiter(void 0, void 0, void 0, function* () {
         const response = yield (0, supertest_1.default)(app).delete("/posts/" + post_id);

@@ -33,18 +33,19 @@ class BaseController {
                 if (filter) {
                     items = yield this.model.findAll({
                         where: { [filterField]: filter }, // cast here to bypass
-                        include: [{ association: 'owner', attributes: ['username'] }],
+                        include: [{ association: 'ownerUser', attributes: ['username'] }],
                     });
                 }
                 else {
                     items = yield this.model.findAll({
-                        include: [{ association: 'owner', attributes: ['username'] }],
+                        include: [{ association: 'ownerUser', attributes: ['username'] }],
                     });
                 }
                 res.send(items);
             }
             catch (error) {
                 res.status(400).send(error);
+                console.log(error);
             }
         });
     }
@@ -53,7 +54,7 @@ class BaseController {
             const itemId = req.params.id;
             try {
                 const item = yield this.model.findByPk(itemId, {
-                    include: [{ association: 'owner', attributes: ['username'] }],
+                    include: [{ association: 'ownerUser', attributes: ['username'] }],
                 });
                 if (item) {
                     res.send(item);
@@ -64,6 +65,7 @@ class BaseController {
             }
             catch (error) {
                 res.status(400).send(error);
+                console.log(error);
             }
         });
     }

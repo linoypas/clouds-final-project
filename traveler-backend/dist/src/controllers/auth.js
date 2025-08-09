@@ -61,11 +61,11 @@ const generateToken = (userId) => {
     }
     const random = Math.random().toString();
     const accessToken = jsonwebtoken_1.default.sign({
-        _id: userId,
+        id: userId,
         random: random,
     }, process.env.TOKEN_SECRET, { expiresIn: process.env.TOKEN_EXPIRES });
     const refreshToken = jsonwebtoken_1.default.sign({
-        _id: userId,
+        id: userId,
         random: random,
     }, process.env.TOKEN_SECRET, { expiresIn: process.env.REFRESH_TOKEN_EXPIRES });
     return {
@@ -108,6 +108,7 @@ const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     }
     catch (err) {
         res.status(400).send(err);
+        console.log(err);
     }
 });
 const verifyRefreshToken = (refreshToken) => {
@@ -180,7 +181,7 @@ const refresh = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         res.status(200).send({
             accessToken: tokens.accessToken,
             refreshToken: tokens.refreshToken,
-            _id: user.id,
+            id: user.id,
         });
     }
     catch (err) {
@@ -240,7 +241,7 @@ const googleSignin = (req, res) => __awaiter(void 0, void 0, void 0, function* (
             res.status(200).send({
                 accessToken: tokens.accessToken,
                 refreshToken: tokens.refreshToken,
-                _id: user.id
+                id: user.id
             });
         }
     }

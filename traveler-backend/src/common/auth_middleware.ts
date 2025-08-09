@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
 
 type Payload = {
-  _id: string;
+  id: string;
 };
 
 const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
@@ -25,7 +25,7 @@ const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
       return;
     }
 
-    req.params.userId = (payload as Payload)._id;
+    req.params.userId = (payload as Payload).id;
     next();
   });
 };

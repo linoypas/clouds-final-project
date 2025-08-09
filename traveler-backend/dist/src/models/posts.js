@@ -16,7 +16,7 @@ Post.init({
     likes: { type: sequelize_1.DataTypes.JSON, defaultValue: [] },
     image: { type: sequelize_1.DataTypes.STRING, allowNull: true },
 }, { sequelize: db_1.default, modelName: "Post", tableName: "posts", timestamps: false });
-Post.belongsTo(users_1.default, { foreignKey: "owner" });
-users_1.default.hasMany(Post, { foreignKey: "owner" });
+Post.belongsTo(users_1.default, { as: 'owner', foreignKey: 'owner' });
+users_1.default.hasMany(Post, { as: 'posts', foreignKey: 'owner' });
 exports.default = Post;
 //# sourceMappingURL=posts.js.map

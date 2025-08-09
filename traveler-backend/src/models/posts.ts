@@ -34,7 +34,7 @@ Post.init(
   { sequelize, modelName: "Post", tableName: "posts", timestamps: false }
 );
 
-Post.belongsTo(User, { foreignKey: "owner" });
-User.hasMany(Post, { foreignKey: "owner" });
+Post.belongsTo(User, { as: 'owner', foreignKey: 'owner' });
+User.hasMany(Post, { as: 'posts', foreignKey: 'owner' });
 
 export default Post;
