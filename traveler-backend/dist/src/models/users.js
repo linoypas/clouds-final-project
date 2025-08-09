@@ -8,11 +8,19 @@ const db_1 = __importDefault(require("../db"));
 class User extends sequelize_1.Model {
 }
 User.init({
-    id: { type: sequelize_1.DataTypes.INTEGER.UNSIGNED, autoIncrement: true, primaryKey: true },
+    id: {
+        type: sequelize_1.DataTypes.INTEGER.UNSIGNED,
+        autoIncrement: true,
+        primaryKey: true,
+    },
     email: { type: sequelize_1.DataTypes.STRING, allowNull: false, unique: true },
     password: { type: sequelize_1.DataTypes.STRING, allowNull: true },
     username: { type: sequelize_1.DataTypes.STRING, allowNull: false, unique: true },
-    profilePicture: { type: sequelize_1.DataTypes.STRING, defaultValue: "/public/profile-pictures/default.png" },
+    profilePicture: {
+        type: sequelize_1.DataTypes.STRING,
+        allowNull: false,
+        defaultValue: process.env.AWS_S3_DEFAULT_PROFILE_PIC_URL || "",
+    },
     refreshToken: { type: sequelize_1.DataTypes.JSON, allowNull: false, defaultValue: [] },
     googleId: { type: sequelize_1.DataTypes.STRING, allowNull: true, unique: true },
 }, { sequelize: db_1.default, modelName: "User", tableName: "users", timestamps: false });

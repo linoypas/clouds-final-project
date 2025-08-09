@@ -23,9 +23,9 @@ const swagger_jsdoc_1 = __importDefault(require("swagger-jsdoc"));
 const swagger_ui_express_1 = __importDefault(require("swagger-ui-express"));
 const cors_1 = __importDefault(require("cors"));
 const path_1 = __importDefault(require("path"));
-const multer_1 = __importDefault(require("multer"));
 const passport_1 = __importDefault(require("passport"));
 const express_session_1 = __importDefault(require("express-session"));
+const upload_middleware_1 = __importDefault(require("./common/upload_middleware"));
 // Import your Sequelize instance
 const db_1 = __importDefault(require("./db")); // adjust path to your db.ts
 // Import models (to ensure they are registered)
@@ -66,19 +66,9 @@ app.use("/auth", users_1.default);
 const publicDir = path_1.default.resolve(process.cwd(), "public");
 const uploadsDir = path_1.default.resolve(process.cwd(), "public/uploads");
 const profilePicturesDir = path_1.default.resolve(process.cwd(), "public/profile-pictures");
-app.use("/public", express_1.default.static(publicDir));
-app.use("/public/uploads", express_1.default.static(uploadsDir));
-app.use("/public/profile-pictures", express_1.default.static(profilePicturesDir));
-const storage = multer_1.default.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, uploadsDir);
-    },
-    filename: (req, file, cb) => {
-        cb(null, Date.now() + "-" + file.originalname);
-    },
+app.post("/upload-image", upload_middleware_1.default.single("image"), (req, res) => {
+    res.json({ url: req.file.location });
 });
-const upload = (0, multer_1.default)({ storage });
-app.use(upload.single("image"));
 const options = {
     definition: {
         openapi: "3.0.0",

@@ -28,7 +28,7 @@ class UserController extends BaseController<User> {
         }
 
         if (req.file) {
-          user.profilePicture = `/public/profile-pictures/${req.file.filename}`;
+          user.profilePicture = (req as any).file.location;
         }
 
         await user.save();

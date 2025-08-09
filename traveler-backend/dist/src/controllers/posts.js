@@ -28,7 +28,9 @@ class PostsController extends base_controller_1.default {
                 res.status(400).send("Invalid user ID");
                 return;
             }
-            const image = req.file ? `/public/uploads/${req.file.filename}` : undefined; // undefined instead of null
+            const image = req.file
+                ? req.file.location
+                : undefined;
             const { title, content } = req.body;
             try {
                 const newPost = yield this.model.create({

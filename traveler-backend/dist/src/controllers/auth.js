@@ -15,20 +15,16 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const users_1 = __importDefault(require("../models/users"));
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
-const path_1 = __importDefault(require("path"));
-const fs_1 = __importDefault(require("fs"));
 const google_auth_library_1 = require("google-auth-library");
 const client = new google_auth_library_1.OAuth2Client();
-const uploadDir = path_1.default.resolve(process.cwd(), 'public/profile-pictures');
-if (!fs_1.default.existsSync(uploadDir)) {
-    fs_1.default.mkdirSync(uploadDir, { recursive: true });
-}
 const register = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const password = req.body.password;
         const salt = yield bcrypt_1.default.genSalt(10);
         const hashedPassword = yield bcrypt_1.default.hash(password, salt);
-        const image = req.file ? `/public/profile-pictures/${req.file.filename}` : "/public/profile-pictures/default.png";
+        const image = req.file
+            ? req.file.location
+            : process.env.AWS_S3_DEFAULT_PROFILE_PIC_URL;
         const user = yield users_1.default.create({
             email: req.body.email,
             username: req.body.username,

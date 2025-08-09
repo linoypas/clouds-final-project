@@ -11,9 +11,16 @@ interface UserAttributes {
   googleId?: string;
 }
 
-interface UserCreationAttributes extends Optional<UserAttributes, "id" | "password" | "refreshToken" | "profilePicture" | "googleId"> {}
+interface UserCreationAttributes
+  extends Optional<
+    UserAttributes,
+    "id" | "password" | "refreshToken" | "profilePicture" | "googleId"
+  > {}
 
-class User extends Model<UserAttributes, UserCreationAttributes> implements UserAttributes {
+class User
+  extends Model<UserAttributes, UserCreationAttributes>
+  implements UserAttributes
+{
   public id!: number;
   public email!: string;
   public password?: string;
@@ -25,11 +32,20 @@ class User extends Model<UserAttributes, UserCreationAttributes> implements User
 
 User.init(
   {
-    id: { type: DataTypes.INTEGER.UNSIGNED, autoIncrement: true, primaryKey: true },
+    id: {
+      type: DataTypes.INTEGER.UNSIGNED,
+      autoIncrement: true,
+      primaryKey: true,
+    },
     email: { type: DataTypes.STRING, allowNull: false, unique: true },
     password: { type: DataTypes.STRING, allowNull: true },
     username: { type: DataTypes.STRING, allowNull: false, unique: true },
-    profilePicture: { type: DataTypes.STRING, defaultValue: "/public/profile-pictures/default.png" },
+    profilePicture: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      defaultValue:
+        process.env.AWS_S3_DEFAULT_PROFILE_PIC_URL || "",
+    },
     refreshToken: { type: DataTypes.JSON, allowNull: false, defaultValue: [] },
     googleId: { type: DataTypes.STRING, allowNull: true, unique: true },
   },

@@ -19,8 +19,11 @@ class PostsController extends BaseController<Post> {
       return;
     }
     
-    const image = (req as any).file ? `/public/uploads/${(req as any).file.filename}` : undefined; // undefined instead of null
-    const { title, content } = req.body;
+    const image = (req as any).file 
+    ? (req as any).file.location 
+    : undefined;
+
+  const { title, content } = req.body;
     
     try {
       const newPost = await this.model.create({

@@ -34,7 +34,7 @@ class UserController extends base_controller_1.default {
                     user.username = req.body.username;
                 }
                 if (req.file) {
-                    user.profilePicture = `/public/profile-pictures/${req.file.filename}`;
+                    user.profilePicture = req.file.location;
                 }
                 yield user.save();
                 console.log("User updated successfully:", user);

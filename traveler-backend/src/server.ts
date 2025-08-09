@@ -12,6 +12,7 @@ import path from "path";
 import multer from "multer";
 import passport from "passport";
 import session from "express-session";
+import uploadMiddleware from "./common/upload_middleware";
 
 // Import your Sequelize instance
 import sequelize from "./db";  // adjust path to your db.ts
@@ -68,21 +69,9 @@ const publicDir = path.resolve(process.cwd(), "public");
 const uploadsDir = path.resolve(process.cwd(), "public/uploads");
 const profilePicturesDir = path.resolve(process.cwd(), "public/profile-pictures");
 
-app.use("/public", express.static(publicDir));
-app.use("/public/uploads", express.static(uploadsDir));
-app.use("/public/profile-pictures", express.static(profilePicturesDir));
-
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, uploadsDir);
-  },
-  filename: (req, file, cb) => {
-    cb(null, Date.now() + "-" + file.originalname);
-  },
+app.post("/upload-image", uploadMiddleware.single("image"), (req, res) => {
+  res.json({ url: (req.file as any).location });
 });
-
-const upload = multer({ storage });
-app.use(upload.single("image"));
 
 const options = {
   definition: {
