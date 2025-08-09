@@ -15,7 +15,7 @@ function Login() {
     setLoading(true);
 
     try {
-      const response = await fetch('${SERVER_URL}:${SERVER_PORT}/auth/login', {
+      const response = await fetch(`${process.env.REACT_APP_SERVER_URL}:${process.env.REACT_APP_SERVER_PORT}/auth/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -47,7 +47,7 @@ function Login() {
   const handleGoogleLoginSuccess = async (response: any) => {
     try {
       const token = response.credential; // Google JWT token
-      const googleResponse = await fetch('${SERVER_URL}:${SERVER_PORT}/auth/google', {
+      const googleResponse = await fetch(`${process.env.REACT_APP_SERVER_URL}:${process.env.REACT_APP_SERVER_PORT}/auth/google`, {
         method: 'POST', // Still using GET as the server expects it
         headers: {
           'Content-Type': 'application/json',

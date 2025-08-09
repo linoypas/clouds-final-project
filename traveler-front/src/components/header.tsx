@@ -14,7 +14,7 @@ const Header: React.FC = () => {
 
     const handleLogout = async () => {
         try {
-            const response = await fetch('${SERVER_URL}:${SERVER_PORT}/auth/logout', {
+            const response = await fetch('${process.env.REACT_APP_SERVER_URL}:${process.env.REACT_APP_SERVER_PORT}/auth/logout', {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${accessToken}`,

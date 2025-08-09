@@ -24,7 +24,7 @@ const Posts = () => {
   useEffect(() => {
     const fetchPost = async () => {
       try {
-        const postsReponse = await fetch(`${SERVER_URL}:${SERVER_PORT}/posts`, {
+        const postsReponse = await fetch(`${process.env.REACT_APP_SERVER_URL}:${process.env.REACT_APP_SERVER_PORT}/posts`, {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${accessToken}`,
@@ -61,7 +61,7 @@ const Posts = () => {
             <Link to={`/posts/${post._id}`} key={post._id} className="post-card-link">
               <div className="post-card">
                 {post.image ? (
-                  <img src={`${SERVER_URL}:${SERVER_PORT}${post.image}`} alt={post.title} className="post-image" />
+                  <img src={`${process.env.REACT_APP_SERVER_URL}:${process.env.REACT_APP_SERVER_PORT}${post.image}`} alt={post.title} className="post-image" />
                 ) : (
                   <p className="p-4 text-gray-700">{post.content}</p>
                 )}

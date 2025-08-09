@@ -35,6 +35,7 @@ const register = async (req: Request, res: Response) => {
     res.status(200).send(user);
   } catch (err) {
     res.status(400).send(err);
+    console.log(err)
   }
 };
 

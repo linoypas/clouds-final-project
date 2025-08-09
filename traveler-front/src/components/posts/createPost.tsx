@@ -23,7 +23,7 @@ const CreatePost = () => {
     formData.append("content", content);
     if (image) formData.append("image", image);
     try {
-      const response = await fetch("${SERVER_URL}:3000/posts",{
+      const response = await fetch("${process.env.REACT_APP_SERVER_URL}:3000/posts",{
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${accessToken}`,

@@ -25,7 +25,7 @@ const Comments = () => {
     useEffect(() => {
         const fetchComments = async () => {
           try {
-            const commentResponse = await fetch(`${SERVER_URL}:${SERVER_PORT}/comments?postId=${postId}`, {
+            const commentResponse = await fetch(`${process.env.REACT_APP_SERVER_URL}:${process.env.REACT_APP_SERVER_PORT}/comments?postId=${postId}`, {
                 method: "GET",
                 headers: {
                     'Authorization': `Bearer ${accessToken}`,
@@ -54,7 +54,7 @@ const Comments = () => {
             return;
         
         try {
-            const response = await fetch(`${SERVER_URL}:${SERVER_PORT}/comments/`, {
+            const response = await fetch(`${process.env.REACT_APP_SERVER_URL}:${process.env.REACT_APP_SERVER_PORT}/comments/`, {
                 method: "POST",
                 headers: { 
                     'Authorization': `Bearer ${accessToken}`,
@@ -79,7 +79,7 @@ const Comments = () => {
             if (!userId) return;
             console.log(commentId);
             try {
-                const response = await fetch(`${SERVER_URL}:${SERVER_PORT}/comments/${commentId}`, {
+                const response = await fetch(`${process.env.REACT_APP_SERVER_URL}:${process.env.REACT_APP_SERVER_PORT}/comments/${commentId}`, {
                     method: 'DELETE',
                     headers: {
                         'Authorization': `Bearer ${accessToken}`,

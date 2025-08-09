@@ -39,6 +39,7 @@ const register = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     }
     catch (err) {
         res.status(400).send(err);
+        console.log(err);
     }
 });
 const verifyGoogleToken = (token) => __awaiter(void 0, void 0, void 0, function* () {

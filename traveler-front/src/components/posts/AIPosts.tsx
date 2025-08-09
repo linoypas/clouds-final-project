@@ -15,7 +15,7 @@ const AiPosts = () => {
     if (!query.trim()) return;
     setLoading(true);
     try {
-      const response = await fetch(`${SERVER_URL}:${SERVER_PORT}/posts/getAi?prompt=${encodeURIComponent(query)}`);
+      const response = await fetch(`${process.env.REACT_APP_SERVER_URL}:${process.env.REACT_APP_SERVER_PORT}/posts/getAi?prompt=${encodeURIComponent(query)}`);
       const data = await response.json();
       console.log("Fetched images:", data.urls);
       if (!response.ok || !data.urls || !Array.isArray(data.urls) || data.urls.length === 0) {

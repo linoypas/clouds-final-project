@@ -19,7 +19,9 @@ const Register = () => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
+  
+    // Assuming x is a FormData instance
+    // and y is navigate function from react-router
     const formData = new FormData();
     formData.append("email", email);
     formData.append("username", username);
@@ -27,23 +29,27 @@ const Register = () => {
     if (image) {
       formData.append("image", image);
     }
-
+  
     try {
-      const response = await fetch("${SERVER_URL}:${SERVER_PORT}/auth/register", {
+      const response = await fetch("http://localhost:3000/auth/register", {
         method: "POST",
-        body: formData, 
+        body: formData,
       });
-
+  
       if (response.ok) {
         console.log("Registered successfully!");
-        navigate("/login");
+        navigate("/login"); // y is navigate here
       } else {
         console.log("Registration failed.");
+        // Optionally read and log error response here:
+        const err = await response.text();
+        console.error("Server response:", err);
       }
     } catch (error) {
       console.error("Error during register:", error);
     }
   };
+  
 
   return (
     <div className="login-container">
