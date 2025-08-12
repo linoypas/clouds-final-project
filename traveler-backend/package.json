@@ -4,12 +4,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "cp .envdev .env && nodemon ./src/server.ts",
-    "start": "tsc && NODE_ENV=production node ./dist/src/server.js",
-    "test": "jest --detectOpenHandles --forceExit --runInBand",
-    "testAuth": "jest --detectOpenHandles --forceExit auth.test.ts",
-    "testPost": "jest --detectOpenHandles --forceExit posts.test.ts",
-    "lint": "eslint . --ext .ts",
-    "prod": "cp .envprod .env && tsc -p tsconfig_prod.json && pm2 restart ecosystem.config.js --env production"
+    "start": "npm i --legacy-peer-deps && tsc && NODE_ENV=production node ./dist/src/server.js",
   },
   "repository": {
     "type": "git",

@@ -8,7 +8,7 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "start": "NODE_ENV=production npm run build && npm run preview"
+    "start": "npm i --legacy-peer-deps && npm run build && npm run preview"
   },
   "dependencies": {
     "@react-oauth/google": "^0.12.1",
