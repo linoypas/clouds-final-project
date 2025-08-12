@@ -49,7 +49,7 @@ app.get("/ui/*", (req, res) => {
   res.sendFile(path.join("front", "index.html"));
 });
 
-app.use("/posts", postsRoute);
+app.use("/api/posts", postsRoute);
 
 app.post("/upload-image", uploadMiddleware.single("image"), (req, res) => {
   res.json({ url: (req.file as any).location });
