@@ -63,8 +63,8 @@ async function startServer() {
 
     await sequelize.sync(); // Or use { force: true } for dev to reset tables
 
-    app.listen(process.env.CLIENT_PORT, () => {
-      console.log(`Server running on port ${process.env.CLIENT_PORT}`);
+    app.listen(process.env.SERVER_PORT, () => {
+      console.log(`Server running on port ${process.env.SERVER_PORT}`);
     });
   } catch (error) {
     console.error("Unable to connect to DB:", error);
