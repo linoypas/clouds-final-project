@@ -23,7 +23,7 @@ const Post = () => {
   useEffect(() => {
     const fetchPost = async () => {
       try {
-        const postResponse = await fetch(`http://localhost:3000/posts/${postId}`, {
+        const postResponse = await fetch(`/api/posts/${postId}`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -50,7 +50,7 @@ const Post = () => {
   const handleDelete = async () => {
     if (window.confirm('Are you sure you want to delete this post?')) {
       try {
-        const response = await fetch(`http://localhost:3000/posts/${postId}`, {
+        const response = await fetch(`/api/posts/${postId}`, {
           method: 'DELETE',
           headers: {
             'Content-Type': 'application/json',
@@ -93,7 +93,7 @@ const Post = () => {
       console.log('Uploading new image:', newImage.name);
 
       try {
-        const uploadResponse = await fetch(`http://localhost:3000/posts/${postId}`, {
+        const uploadResponse = await fetch(`/api/posts/${postId}`, {
           method: 'PUT',
           body: formData,
         });
@@ -114,7 +114,7 @@ const Post = () => {
     const updatedPost = { ...post, title, content, image: updatedImageUrl };
 
     try {
-      const response = await fetch(`http://localhost:3000/posts/${postId}`, {
+      const response = await fetch(`/api/posts/${postId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

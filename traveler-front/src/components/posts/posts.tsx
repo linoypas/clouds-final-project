@@ -16,7 +16,7 @@ const Posts = () => {
   useEffect(() => {
     const fetchPost = async () => {
       try {
-        const postsReponse = await fetch(`http://localhost:3000/posts`, {
+        const postsReponse = await fetch(`/api/posts`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
