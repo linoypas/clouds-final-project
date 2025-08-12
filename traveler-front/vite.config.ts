@@ -9,7 +9,10 @@ export default defineConfig({
     port: 3010, // Change port if needed
   },
     preview: {
-    host: '0.0.0.0',
-    port: 3010,
+      allowedHosts: [
+        'temp-alb-2063038463.us-east-1.elb.amazonaws.com'
+      ],
+      host: '0.0.0.0',
+      port: 3010,
   },
 })
